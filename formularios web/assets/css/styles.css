@@ -129,3 +129,25 @@ a{ color: var(--white); }
 @media (max-width: 576px){
 	.card{ padding: 0.25rem; }
 }
+
+/* === Notificaciones flotantes personalizadas === */
+.toast-alert {
+  position: relative;
+  background: #ffffff;
+  border: 2px solid #b30000;
+  color: #b30000;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  opacity: 0;
+  animation: fadeInOut 4s ease forwards;
+}
+
+/* Animación suave */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10%, 90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
