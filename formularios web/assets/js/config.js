@@ -5,4 +5,4 @@
 // window.API_BASE_URL = 'http://localhost:5251';
 
 // Ajusta aquí según tu entorno:
-window.API_BASE_URL = 'https://localhost:7279';
+window.API_BASE_URL = 'https://localhost:44376';

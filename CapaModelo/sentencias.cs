@@ -539,14 +539,14 @@ namespace CapaModelo
 
                     if (string.IsNullOrWhiteSpace(contrasena) || contrasena == "********")
                     {
-                        // 👇 No cambiar la contraseña
+                        //  No cambiar la contraseña
                         query = @"UPDATE Usuarios 
                           SET nombre_completo = ?, usuario_login = ?, correo = ?, telefono = ?, puesto = ?, departamento = ?
                           WHERE id_usuario = ?";
                     }
                     else
                     {
-                        // 👇 Si hay una nueva contraseña, la hasheamos y actualizamos
+                        //  Si hay una nueva contraseña, la hasheamos y actualizamos
                         string hash = BCrypt.Net.BCrypt.HashPassword(contrasena);
                         query = @"UPDATE Usuarios 
                           SET nombre_completo = ?, usuario_login = ?, contrasena = ?, correo = ?, telefono = ?, puesto = ?, departamento = ?

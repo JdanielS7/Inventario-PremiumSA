@@ -29,6 +29,7 @@ builder.Services.AddCors(options =>
                   "http://localhost:8080"
               ) // Orígenes permitidos para servir formularios estáticos
               .AllowAnyHeader()
+              .AllowCredentials()
               .AllowAnyMethod();
     });
 });
