@@ -44,7 +44,6 @@
             this.btn_ayudaequipo = new System.Windows.Forms.Button();
             this.btn_eliminarinventario = new System.Windows.Forms.Button();
             this.btn_actualizarinventario = new System.Windows.Forms.Button();
-            this.btn_guardarinventario = new System.Windows.Forms.Button();
             this.btn_modificarinventario = new System.Windows.Forms.Button();
             this.panel_mantenimientou = new System.Windows.Forms.Panel();
             this.salir_equipo = new System.Windows.Forms.Button();
@@ -131,7 +130,7 @@
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
@@ -182,7 +181,6 @@
             this.panel1.Controls.Add(this.btn_ayudaequipo);
             this.panel1.Controls.Add(this.btn_eliminarinventario);
             this.panel1.Controls.Add(this.btn_actualizarinventario);
-            this.panel1.Controls.Add(this.btn_guardarinventario);
             this.panel1.Controls.Add(this.btn_modificarinventario);
             this.panel1.ForeColor = System.Drawing.SystemColors.Control;
             this.panel1.Location = new System.Drawing.Point(122, 16);
@@ -194,7 +192,7 @@
             // 
             this.btn_ayudaequipo.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btn_ayudaequipo.Image = global::CapaVista.Properties.Resources.ayuda_registro;
-            this.btn_ayudaequipo.Location = new System.Drawing.Point(452, 3);
+            this.btn_ayudaequipo.Location = new System.Drawing.Point(398, 3);
             this.btn_ayudaequipo.Name = "btn_ayudaequipo";
             this.btn_ayudaequipo.Size = new System.Drawing.Size(93, 107);
             this.btn_ayudaequipo.TabIndex = 9;
@@ -205,7 +203,7 @@
             // 
             this.btn_eliminarinventario.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btn_eliminarinventario.Image = global::CapaVista.Properties.Resources.eliminar_usuario;
-            this.btn_eliminarinventario.Location = new System.Drawing.Point(339, 3);
+            this.btn_eliminarinventario.Location = new System.Drawing.Point(285, 3);
             this.btn_eliminarinventario.Name = "btn_eliminarinventario";
             this.btn_eliminarinventario.Size = new System.Drawing.Size(106, 107);
             this.btn_eliminarinventario.TabIndex = 8;
@@ -216,29 +214,18 @@
             // 
             this.btn_actualizarinventario.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btn_actualizarinventario.Image = global::CapaVista.Properties.Resources.actualizar_registro;
-            this.btn_actualizarinventario.Location = new System.Drawing.Point(229, 3);
+            this.btn_actualizarinventario.Location = new System.Drawing.Point(175, 3);
             this.btn_actualizarinventario.Name = "btn_actualizarinventario";
             this.btn_actualizarinventario.Size = new System.Drawing.Size(105, 107);
             this.btn_actualizarinventario.TabIndex = 7;
             this.btn_actualizarinventario.UseVisualStyleBackColor = true;
             this.btn_actualizarinventario.Click += new System.EventHandler(this.btn_actualizarequipo_Click);
             // 
-            // btn_guardarinventario
-            // 
-            this.btn_guardarinventario.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btn_guardarinventario.Image = global::CapaVista.Properties.Resources.guardar_registro1;
-            this.btn_guardarinventario.Location = new System.Drawing.Point(16, 3);
-            this.btn_guardarinventario.Name = "btn_guardarinventario";
-            this.btn_guardarinventario.Size = new System.Drawing.Size(93, 107);
-            this.btn_guardarinventario.TabIndex = 5;
-            this.btn_guardarinventario.UseVisualStyleBackColor = true;
-            this.btn_guardarinventario.Click += new System.EventHandler(this.btn_guardarregistroequipo_Click);
-            // 
             // btn_modificarinventario
             // 
             this.btn_modificarinventario.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btn_modificarinventario.Image = global::CapaVista.Properties.Resources.modificar_registro;
-            this.btn_modificarinventario.Location = new System.Drawing.Point(116, 3);
+            this.btn_modificarinventario.Location = new System.Drawing.Point(62, 3);
             this.btn_modificarinventario.Name = "btn_modificarinventario";
             this.btn_modificarinventario.Size = new System.Drawing.Size(108, 107);
             this.btn_modificarinventario.TabIndex = 6;
@@ -275,7 +262,7 @@
             this.lbl_mantenimientoequipos.Location = new System.Drawing.Point(242, 23);
             this.lbl_mantenimientoequipos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lbl_mantenimientoequipos.Name = "lbl_mantenimientoequipos";
-            this.lbl_mantenimientoequipos.Size = new System.Drawing.Size(362, 32);
+            this.lbl_mantenimientoequipos.Size = new System.Drawing.Size(363, 32);
             this.lbl_mantenimientoequipos.TabIndex = 2;
             this.lbl_mantenimientoequipos.Text = "INVENTARIO DE EQUIPOS";
             // 
@@ -316,7 +303,6 @@
         private System.Windows.Forms.Button btn_ayudaequipo;
         private System.Windows.Forms.Button btn_eliminarinventario;
         private System.Windows.Forms.Button btn_actualizarinventario;
-        private System.Windows.Forms.Button btn_guardarinventario;
         private System.Windows.Forms.Button btn_modificarinventario;
         private System.Windows.Forms.Panel panel_mantenimientou;
         private System.Windows.Forms.Button salir_equipo;
