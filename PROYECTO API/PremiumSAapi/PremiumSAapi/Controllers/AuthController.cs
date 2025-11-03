@@ -43,7 +43,7 @@ namespace PremiumSAapi.Controllers
             if (!passwordMatches)
                 return BadRequest(new { message = "Credenciales inválidas" });
 
-            var minutos = dto.MinutosValidez ?? 10;
+            var minutos = dto.MinutosValidez ?? 5;
             var (ok, codigo, error) = await _authService.GenerarCodigoAsync(usuario.Id, minutosValidez: minutos);
             if (!ok) return StatusCode(500, new { message = "No fue posible generar el código", error });
 

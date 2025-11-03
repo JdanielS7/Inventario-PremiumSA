@@ -11,7 +11,8 @@ namespace PremiumSAapi.Data
         public DbSet<Usuario> Usuarios { get; set; } = null!;
         public DbSet<AuthCode> AuthCodes { get; set; } = null!;
         public DbSet<Movimiento> Movimientos { get; set; } = null!;
-        // Agrega más DbSet si creas más modelos
+        public DbSet<Categoria> Categorias { get; set; } = null!;
+        public DbSet<Equipo> Equipos { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +61,23 @@ namespace PremiumSAapi.Data
                 entity.Property(e => e.TipoMovimiento).HasColumnName("tipo_movimiento");
                 entity.Property(e => e.FechaMovimiento).HasColumnName("fecha_movimiento");
                 entity.Property(e => e.Observaciones).HasColumnName("observaciones");
+            });
+
+            // Categorías
+            modelBuilder.Entity<Categoria>(entity =>
+            {
+                entity.ToTable("Categorias");
+                entity.HasKey(e => e.IdCategoria).HasName("PK_Categorias");
+            });
+
+            // Equipos
+            modelBuilder.Entity<Equipo>(entity =>
+            {
+                entity.ToTable("Equipos");
+                entity.HasKey(e => e.IdEquipo).HasName("PK_Equipos");
+                entity.HasOne(e => e.Categoria)
+                    .WithMany()
+                    .HasForeignKey(e => e.IdCategoria);
             });
         }
     }

@@ -1,8 +1,8 @@
 /* styles.css - temas: formularios rojos con texto y detalles blancos */
 :root{
-	--red-900: #b30000; /* fondo principal */
-	--red-700: #c82333; /* botones */
-	--red-500: #e05353; /* inputs */
+	--red-900: #b30000;
+	--red-700: #c82333;
+	--red-500: #e05353;
 	--white: #ffffff;
 }
 
@@ -17,37 +17,63 @@ body{
 	color: var(--white);
 	box-shadow: 0 6px 18px rgba(179,0,0,0.18);
 	border: none;
-	position: relative; /* necesario para que ::before se posicione respecto a la card */
+	position: relative;
 }
 
 .card .card-body{
 	padding: 1.5rem;
 }
 
-/* Títulos y textos dentro de tarjetas */
 .card .card-title, .card h5, .card label, .form-text{
 	color: var(--white);
 }
 
-/* Inputs y selects con borde blanco y texto blanco */
-.form-control, .form-select, textarea.form-control{
+.form-control, textarea.form-control{
 	background: rgba(255,255,255,0.06);
 	border: 1px solid rgba(255,255,255,0.35);
 	color: var(--white);
+}
+
+/* Estilo base del select */
+.form-select {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid var(--red-900);
+}
+
+/* Opciones dentro del desplegable */
+.form-select option {
+  background-color: white !important;
+  color: black !important;
+}
+
+/* Cuando se pasa el cursor por encima o se selecciona */
+.form-select option:hover,
+.form-select option:focus,
+.form-select option:checked {
+  background-color: gray !important;
+  color: white !important;
 }
 
 .form-control::placeholder, textarea.form-control::placeholder{
 	color: rgba(255,255,255,0.85);
 }
 
-.form-control:focus, .form-select:focus, textarea.form-control:focus{
+.form-control:focus, textarea.form-control:focus{
 	background: rgba(255,255,255,0.04);
 	border-color: var(--white);
 	box-shadow: 0 0 0 0.2rem rgba(200,20,20,0.15);
 	color: var(--white);
 }
 
-/* Botones en rojo consistente con texto blanco */
+/* Al enfocar el select completo */
+.form-select:focus {
+  border-color: var(--red-900) !important;
+  box-shadow: 0 0 0 0.2rem rgba(200,20,20,0.15);
+  background-color: white !important;
+  color: black !important;
+}
+
 .btn-primary, .btn-success{
 	background: var(--red-700) !important;
 	border-color: var(--red-700) !important;
@@ -63,7 +89,6 @@ body{
 	opacity: 0.95;
 }
 
-/* Caja específica del código generado */
 #codigoResult{
 	background: rgba(255,255,255,0.06);
 	padding:12px;
@@ -71,7 +96,6 @@ body{
 	color: var(--white);
 }
 
-/* Encabezado visible en la parte superior de la tarjeta */
 .card-encabezado{
 	display:flex;
 	align-items:center;
@@ -79,7 +103,6 @@ body{
 	gap: 12px;
 	padding: 0.75rem 1rem;
 	background: transparent;
-	/* aumentar la zona del encabezado sin tapar el contenido */
 	min-height:64px;
 }
 .card-encabezado img{
@@ -93,12 +116,10 @@ body{
 	max-height:56px;
 }
 
-/* Fondo tenue (watermark) usando la misma imagen del encabezado, no tapa el contenido */
 .card::before{
 	content: '';
 	position: absolute;
 	inset: 0;
-	/* ruta corregida: desde assets/css/ -> subir dos niveles hasta la raíz de formularios web */
 	background-image: url('../../src/encabezado.jpg');
 	background-repeat: no-repeat;
 	background-position: center top;
@@ -108,13 +129,11 @@ body{
 	z-index: 0;
 }
 
-/* Asegurar que el contenido de la card quede por encima del pseudo-elemento */
 .card > .card-body{
 	position: relative;
 	z-index: 1;
 }
 
-/* Alertas con estilo claro sobre fondo rojo */
 .alert{
 	margin-bottom: 1rem;
 }
@@ -122,32 +141,88 @@ body{
 .alert-success{ background: rgba(255,255,255,0.08); color: var(--white); border: 1px solid rgba(255,255,255,0.12); }
 .alert-warning{ background: rgba(255,255,255,0.06); color: var(--white); border: 1px solid rgba(255,255,255,0.08); }
 
-/* Enlaces blancos */
 a{ color: var(--white); }
 
-/* Ajustes responsivos */
 @media (max-width: 576px){
 	.card{ padding: 0.25rem; }
 }
 
-/* === Notificaciones flotantes personalizadas === */
-.toast-alert {
-  position: relative;
-  background: #ffffff;
-  border: 2px solid #b30000;
-  color: #b30000;
-  font-weight: bold;
-  border-radius: 10px;
-  padding: 12px 18px;
-  margin-bottom: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  opacity: 0;
-  animation: fadeInOut 4s ease forwards;
+/* === BOTÓN COPIAR CÓDIGO === */
+#copyBtn {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-left: 8px;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-/* Animación suave */
-@keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(-10px); }
-  10%, 90% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-10px); }
+#copyBtn:hover {
+  color: var(--red-500);
+  transform: scale(1.15);
 }
+
+#copyBtn:active {
+  transform: scale(0.95);
+}
+
+/* === TOASTS === */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-alert {
+  background: #ffffff;
+  color: var(--red-900);
+  border-left: 5px solid var(--red-700);
+  border-radius: 8px;
+  padding: 12px 18px;
+  min-width: 240px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-weight: 600;
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideInOut 4s ease forwards;
+}
+
+@keyframes slideInOut {
+  0% { opacity: 0; transform: translateX(100%); }
+  10%, 90% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+
+.toast.bg-success {
+  background-color: #28a745 !important;
+}
+.toast.bg-danger {
+  background-color: #b30000 !important;
+}
+.toast.bg-warning {
+  background-color: #ffc107 !important;
+  color: #b30000 !important;
+}
+.toast.bg-info {
+  background-color: #e05353 !important;
+  color: white !important;
+}
+
+#copiarBtn i {
+  font-size: 1.2rem;
+}
+#codigoGenerado {
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+
+
+/* estilos extra */
+

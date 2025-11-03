@@ -11,7 +11,7 @@ namespace PremiumSAapi.Services
         private readonly InventarioContext _db;
         public AuthService(InventarioContext db) { _db = db; }
 
-        public async Task<(bool ok, string codigo, string? error)> GenerarCodigoAsync(int usuarioId, int minutosValidez = 10)
+        public async Task<(bool ok, string codigo, string? error)> GenerarCodigoAsync(int usuarioId, int minutosValidez = 5)
         {
             var rnd = new Random();
             var codigo = rnd.Next(100000, 999999).ToString();

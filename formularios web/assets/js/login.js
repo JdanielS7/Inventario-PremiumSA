@@ -1,73 +1,89 @@
-// login.js - maneja el envío del formulario de login y muestra el código recibido
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('loginForm');
   const codigoDiv = document.getElementById('codigoResult');
   const codigoSpan = document.getElementById('codigo');
   const expiresSpan = document.getElementById('expires');
+  const copyBtn = document.getElementById('copyBtn');
+  const toastContainer = document.getElementById('toastContainer'); // debe existir en tu HTML
 
-  // === Notificaciones flotantes personalizadas ===
-  function showToast(message, type = 'danger') {
+  // --- FUNCION PARA MOSTRAR TOASTS ---
+  function showToast(message, type = 'info') {
+    // Colores por tipo
+    const bgClass =
+      type === 'success' ? 'bg-success text-white' :
+      type === 'danger' ? 'bg-danger text-white' :
+      type === 'warning' ? 'bg-warning text-dark' :
+      'bg-info text-white';
+
+    // Crear estructura del toast
     const toast = document.createElement('div');
-    toast.className = 'toast-alert';
-    toast.textContent = message;
+    toast.className = `toast align-items-center ${bgClass} border-0`;
+    toast.role = 'alert';
+    toast.ariaLive = 'assertive';
+    toast.ariaAtomic = 'true';
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    `;
 
-    // Cambia color según tipo
-    if (type === 'success') {
-      toast.style.color = '#006400'; // verde oscuro
-      toast.style.borderColor = '#006400';
-    } else {
-      toast.style.color = '#b30000'; // rojo
-      toast.style.borderColor = '#b30000';
-    }
+    // Insertar en contenedor
+    toastContainer.appendChild(toast);
 
-    const alertPlaceholder = document.getElementById('alert-placeholder');
-    alertPlaceholder.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
+    // Inicializar y mostrar
+    const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+    bsToast.show();
+
+    // Eliminar del DOM después de ocultarse
+    toast.addEventListener('hidden.bs.toast', () => toast.remove());
   }
 
-  function showAlert(message, type = 'danger', timeout = 4000) {
-    // Redirige todas las notificaciones al sistema de burbujas flotantes
-    showToast(message, type);
-  }
-
-  form.addEventListener('submit', async (e) => {
+  // --- EVENTO DE LOGIN ---
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const usuario = document.getElementById('usuario').value.trim();
-    const contrasena = document.getElementById('contrasena').value;
-
-    if (!usuario || !contrasena) {
-      showAlert('Completa usuario y contraseña.');
-      return;
-    }
+    const contrasena = document.getElementById('contrasena').value.trim();
 
     try {
       const base = (window.API_BASE_URL || '').replace(/\/$/, '');
+      if (!base) throw new Error('API_BASE_URL no definida.');
+
       const res = await fetch(`${base}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario_login: usuario, contrasena })
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ message: 'Error en la petición' }));
-        showAlert(err.message || 'Error en autenticación', 'danger');
-        return;
-      }
+      if (!res.ok) throw new Error('Usuario o contraseña incorrectos');
 
-      const body = await res.json();
-      if (body.success) {
-        codigoSpan.textContent = body.codigo || '---';
-        expiresSpan.textContent = body.expiresAt || '';
-        codigoDiv.style.display = 'block';
-        showAlert('Inicio de sesión correcto. Código generado.', 'success');
-      } else {
-        showAlert(body.message || 'Credenciales inválidas', 'danger');
-      }
+      const data = await res.json();
+      showToast('Inicio de sesión exitoso.', 'success');
 
-    } catch (err) {
-      console.error(err);
-      showAlert('No se pudo conectar al servidor.');
+      // Mostrar el código recibido
+      codigoSpan.textContent = data.codigo;
+      expiresSpan.textContent = `Expira en: ${data.expiracion}`;
+      codigoDiv.style.display = 'block';
+
+      // Guardar el código en localStorage
+      localStorage.setItem('codigoAcceso', data.codigo);
+    } catch (error) {
+      showToast(error.message, 'danger');
+    }
+  });
+
+  // --- COPIAR CODIGO AL PORTAPAPELES ---
+  copyBtn.addEventListener('click', async () => {
+    const codigo = codigoSpan.textContent.trim();
+    if (!codigo) return;
+
+    try {
+      await navigator.clipboard.writeText(codigo);
+      localStorage.setItem('codigoAcceso', codigo);
+      showToast('Código copiado correctamente.', 'success');
+    } catch (error) {
+      showToast('Error al copiar el código.', 'danger');
     }
   });
 });
