@@ -76,7 +76,7 @@
             this.label1.Location = new System.Drawing.Point(296, 8);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(84, 32);
+            this.label1.Size = new System.Drawing.Size(85, 32);
             this.label1.TabIndex = 4;
             this.label1.Text = "Menu";
             // 
@@ -123,7 +123,7 @@
             // 
             this.Btn_InventarioEquipos.BackgroundImage = global::CapaVista.Properties.Resources.simplificado;
             this.Btn_InventarioEquipos.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.Btn_InventarioEquipos.Location = new System.Drawing.Point(56, 27);
+            this.Btn_InventarioEquipos.Location = new System.Drawing.Point(56, 165);
             this.Btn_InventarioEquipos.Margin = new System.Windows.Forms.Padding(2);
             this.Btn_InventarioEquipos.Name = "Btn_InventarioEquipos";
             this.Btn_InventarioEquipos.Size = new System.Drawing.Size(100, 102);
@@ -158,7 +158,7 @@
             // 
             this.btn_movimientoinventario.BackgroundImage = global::CapaVista.Properties.Resources.inventario;
             this.btn_movimientoinventario.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.btn_movimientoinventario.Location = new System.Drawing.Point(56, 165);
+            this.btn_movimientoinventario.Location = new System.Drawing.Point(58, 31);
             this.btn_movimientoinventario.Margin = new System.Windows.Forms.Padding(2);
             this.btn_movimientoinventario.Name = "btn_movimientoinventario";
             this.btn_movimientoinventario.Size = new System.Drawing.Size(98, 94);
