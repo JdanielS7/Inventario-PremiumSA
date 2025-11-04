@@ -1,9 +1,13 @@
 {
   "version": 2,
   "builds": [
-    { "src": "formularios web/**", "use": "@vercel/static" }
+    {
+      "src": "formularios-web/(.*)",
+      "use": "@vercel/static"
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "/formularios web/login.html" }
+    { "src": "/", "dest": "/formularios-web/login.html" },
+    { "src": "/(.*)", "dest": "/formularios-web/$1" }
   ]
 }
