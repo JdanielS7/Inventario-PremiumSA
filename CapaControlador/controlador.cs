@@ -197,7 +197,10 @@ namespace CapaControlador
         {
             return c_Sentencias.obtenerInventario();
         }
-
+        public DataTable obtenerEquiposID()
+        {
+            return c_Sentencias.obtenerEquiposID();
+        }
         public void editarInventario(int id_inventario, int stock_minimo, int stock_actual)
         {
             c_Sentencias.editarInventario(id_inventario, stock_minimo, stock_actual);
@@ -208,9 +211,9 @@ namespace CapaControlador
             c_Sentencias.eliminarInventario(id_inventario);
         }
 
-        public void guardarMovimiento(int idEquipo, int idUsuario, string tipoMovimiento, string observaciones)
+        public void guardarMovimiento(int idEquipo, int idUsuario, string tipoMovimiento, string observaciones, int cantidad)
         {
-            c_Sentencias.registrarMovimiento(idEquipo, idUsuario, tipoMovimiento, observaciones);
+            c_Sentencias.registrarMovimiento(idEquipo, idUsuario, tipoMovimiento, observaciones, cantidad);
         }
 
         public DataTable obtenerMovimientos()
@@ -237,9 +240,9 @@ namespace CapaControlador
             box.ValueMember = "id_usuario";
             box.SelectedIndex = -1;
         }
-        public void modificarMovimiento(int idEquipo, int idUsuario, string tipoMovimiento, string observaciones)
+        public void modificarMovimiento(int idEquipo, int idUsuario, string tipoMovimiento, string observaciones, int cantidad)
         {
-            c_Sentencias.modificarMovimiento(idEquipo, idUsuario, tipoMovimiento, observaciones);
+            c_Sentencias.modificarMovimiento(idEquipo, idUsuario, tipoMovimiento, observaciones, cantidad);
         }
         public void eliminarMovimiento(int idMovimiento)
         {

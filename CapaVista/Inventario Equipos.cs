@@ -33,10 +33,15 @@ namespace CapaVista
             cmb_idEquipo.DisplayMember = "nombre_categoria"; // lo que ve el usuario
             cmb_idEquipo.SelectedIndex = -1;                 // sin selección inicial
 
+
+            cmb_Id.DataSource = capaControlador_inventario.obtenerEquiposID();
+            cmb_Id.ValueMember = "id_equipo";
+            cmb_Id.DisplayMember = "id_equipo";
+            cmb_Id.SelectedIndex = -1;
+
             // Cargar inventario en DataGridView
             CargarInventario();
         }
-
 
         private void salir_equipo_Click(object sender, EventArgs e)
         {
@@ -45,7 +50,6 @@ namespace CapaVista
             menu.ShowDialog();
             this.Close();
         }
-
 
         private void LimpiarCampos()
         {
@@ -70,15 +74,6 @@ namespace CapaVista
 
             dgv_inventario.AutoResizeColumns();
         }
-
-      
-
-
-
-
-
-
-
         // Botón actualizar DataGridView
         private void btn_actualizarInventario_Click(object sender, EventArgs e)
         {
@@ -92,32 +87,6 @@ namespace CapaVista
             Menu menu = new Menu(nombreUsuario);
             menu.ShowDialog();
             this.Close();
-        }
-
-        private void btn_guardarregistroequipo_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (cmb_idEquipo.SelectedIndex == -1)
-                {
-                    MessageBox.Show("Selecciona un equipo.");
-                    return;
-                }
-
-                int idEquipo = Convert.ToInt32(cmb_idEquipo.SelectedValue);
-                int stockMinimo = Convert.ToInt32(txtStockMinimo.Text);
-                int stockActual = string.IsNullOrWhiteSpace(txtStockActual.Text) ? 0 : Convert.ToInt32(txtStockActual.Text);
-
-                capaControlador_inventario.guardarInventario(idEquipo, stockMinimo, stockActual);
-
-                MessageBox.Show("Inventario registrado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                CargarInventario();
-                LimpiarCampos();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al guardar inventario: " + ex.Message);
-            }
         }
 
         private void btn_modregistroequipo_Click(object sender, EventArgs e)
@@ -193,14 +162,22 @@ namespace CapaVista
                 txtStockActual.Text = fila.Cells["stock_actual"].Value?.ToString();
                 txtStockMinimo.Text = fila.Cells["stock_minimo"].Value?.ToString();
 
-                // Seleccionar el equipo correspondiente
-                this.BeginInvoke((Action)(() =>
+                // 🔹 Seleccionar categoría (ya existente)
+                if (fila.Cells["nombre_categoria"].Value != DBNull.Value)
                 {
-                    if (fila.Cells["id_equipo"].Value != DBNull.Value)
-                        cmb_idEquipo.SelectedValue = Convert.ToInt32(fila.Cells["id_equipo"].Value);
-                    else
-                        cmb_idEquipo.SelectedIndex = -1;
-                }));
+                    cmb_idEquipo.Text = fila.Cells["nombre_categoria"].Value.ToString();
+                }
+
+                // 🔹 Seleccionar id del equipo
+                if (fila.Cells["id_equipo"].Value != DBNull.Value)
+                {
+                    int idEquipo = Convert.ToInt32(fila.Cells["id_equipo"].Value);
+                    cmb_Id.SelectedValue = idEquipo;
+                }
+                else
+                {
+                    cmb_Id.SelectedIndex = -1;
+                }
             }
         }
     }
