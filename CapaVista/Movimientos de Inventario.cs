@@ -85,8 +85,9 @@ namespace CapaVista
                 int idUsuario = Convert.ToInt32(cmbUsuario.SelectedValue);
                 string tipoMovimiento = cmbTipoMovimiento.SelectedItem.ToString();
                 string observaciones = txtObservaciones.Text;
+                int cantidad = (int)numCantidad.Value;
 
-                capaControlador_movimiento.guardarMovimiento(idEquipo, idUsuario, tipoMovimiento, observaciones);
+                capaControlador_movimiento.guardarMovimiento(idEquipo, idUsuario, tipoMovimiento, observaciones, cantidad);
 
                 MessageBox.Show("Movimiento registrado correctamente.");
                 CargarMovimientos();
@@ -102,14 +103,24 @@ namespace CapaVista
         {
             try
             {
-                int idEquipo = Convert.ToInt32(cmbEquipo.Text);
-                int idUsuario = Convert.ToInt32(cmbUsuario.Text);
+                if (cmbEquipo.SelectedValue == null || cmbUsuario.SelectedValue == null)
+                {
+                    MessageBox.Show("Seleccione un equipo y un usuario válidos.");
+                    return;
+                }
+
+                int idEquipo = Convert.ToInt32(cmbEquipo.SelectedValue);
+                int idUsuario = Convert.ToInt32(cmbUsuario.SelectedValue);
+                int cantidad = (int)numCantidad.Value;
+
                 capaControlador_movimiento.modificarMovimiento(
                     idEquipo,
                     idUsuario,
                     cmbTipoMovimiento.Text,
-                    txtObservaciones.Text
-                    );
+                    txtObservaciones.Text,
+                    cantidad
+                );
+
                 CargarMovimientos();
                 LimpiarCampos();
             }
@@ -126,13 +137,13 @@ namespace CapaVista
 
         private void btn_eliminarmovimiento_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(cmbEquipo.Text))
+            if (cmbEquipo.SelectedValue == null)
             {
                 MessageBox.Show("Seleccione un movimiento de la lista primero.");
                 return;
             }
 
-            int idEquipo = Convert.ToInt32(cmbEquipo.Text);
+            int idEquipo = Convert.ToInt32(cmbEquipo.SelectedValue);
 
             DialogResult result = MessageBox.Show(
                 "¿Está seguro que desea eliminar este movimiento?",
@@ -146,7 +157,7 @@ namespace CapaVista
                 try
                 {
                     capaControlador_movimiento.eliminarMovimiento(idEquipo);
-                    MessageBox.Show("Estado eliminado correctamente.");
+                    MessageBox.Show("Movimiento eliminado correctamente.");
                     CargarMovimientos(); // refrescar DataGridView
                     LimpiarCampos();
                 }
@@ -155,6 +166,16 @@ namespace CapaVista
                     MessageBox.Show("Error al eliminar: " + ex.Message);
                 }
             }
+        }
+
+        private void Movimientos_de_Inventario_Load(object sender, EventArgs e)
+        {
+            numCantidad.Select(0, 0);
+            numCantidad.Enter += (s, ev) =>
+            {
+                numCantidad.Select(0, 0);
+                this.ActiveControl = null;
+            };
         }
     }
 }

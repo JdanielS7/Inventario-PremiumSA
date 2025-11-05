@@ -782,8 +782,20 @@ namespace CapaModelo
             }
             return dt;
         }
+        public DataTable obtenerEquiposID()
+        {
+            DataTable dt = new DataTable();
+            using (OdbcConnection connection = cn.Conexion())
+            {
+                string query = @"SELECT id_equipo, nombre_equipo FROM Equipos";
 
-
+                using (OdbcDataAdapter da = new OdbcDataAdapter(query, connection))
+                {
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
 
 
         // Guardar registro de inventario
@@ -862,23 +874,21 @@ namespace CapaModelo
                 }
             }
         }
-
-        // Registrar movimiento de equipo
-        public void registrarMovimiento(int idEquipo, int idUsuario, string tipoMovimiento, string observaciones)
+        //registrar movimiento de inventario
+        public void registrarMovimiento(int idEquipo, int idUsuario, string tipoMovimiento, string observaciones, int cantidad)
         {
             using (OdbcConnection connection = cn.Conexion())
             {
                 try
                 {
-                    // Llamada al procedimiento almacenado
-                    string query = "CALL registrar_movimiento(?, ?, ?, ?)";
+                    string query = "CALL registrar_movimiento(?, ?, ?, ?, ?)";
                     using (OdbcCommand cmd = new OdbcCommand(query, connection))
                     {
-                        // Agregar parámetros en orden, sin nombres
-                        cmd.Parameters.AddWithValue("", idEquipo);
-                        cmd.Parameters.AddWithValue("", idUsuario);
-                        cmd.Parameters.AddWithValue("", tipoMovimiento);
-                        cmd.Parameters.AddWithValue("", observaciones);
+                        cmd.Parameters.AddWithValue("@p_id_equipo", idEquipo);
+                        cmd.Parameters.AddWithValue("@p_id_usuario", idUsuario);
+                        cmd.Parameters.AddWithValue("@p_tipo_movimiento", tipoMovimiento);
+                        cmd.Parameters.AddWithValue("@p_observaciones", observaciones);
+                        cmd.Parameters.AddWithValue("@p_cantidad", cantidad);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -889,7 +899,6 @@ namespace CapaModelo
                 }
             }
         }
-
 
         public DataTable obtenerMovimientos()
         {
@@ -902,6 +911,7 @@ namespace CapaModelo
             e.nombre_equipo AS Equipo,
             u.nombre_completo AS Usuario,
             m.tipo_movimiento,
+            m.cantidad,
             m.fecha_movimiento,
             m.observaciones
         FROM Movimientos m
@@ -917,52 +927,88 @@ namespace CapaModelo
             return dt;
         }
 
-        public void modificarMovimiento(int idEquipo, int idUsuario, string tipoMovimiento, string observaciones)
-        {
-            OdbcConnection connection = cn.Conexion();
-            if (connection == null)
-            {
-                MessageBox.Show("No se pudo conectar a la base de datos", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            try
-            {
-                string query_editar_MovimientoEstado = @"UPDATE Movimientos 
-                             SET id_usuario = ?, tipo_movimiento = ?, observaciones = ?
-                             WHERE id_equipo = ?";
-                OdbcCommand cmd2 = new OdbcCommand(query_editar_MovimientoEstado, connection);
-                cmd2.Parameters.AddWithValue("id_usuario", idUsuario);
-                cmd2.Parameters.AddWithValue("tipo_movimiento", tipoMovimiento);
-                cmd2.Parameters.AddWithValue("observaciones", observaciones);
-                cmd2.Parameters.AddWithValue("id_equipo", idEquipo);
-
-                int filas = cmd2.ExecuteNonQuery();
-                if (filas > 0)
-                {
-                    MessageBox.Show("Movimiento actualizado correctamente");
-                }
-                else
-                {
-                    MessageBox.Show("No se encontró el movimiento con el ID especificado");
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Hubo un error al intentar registrar el movimiento" + e.Message, "Error: ", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        public void eliminarMovimiento(int idEquipo)
+        public void modificarMovimiento(int idMovimiento, int idUsuario, string tipoMovimiento, string observaciones, int cantidad)
         {
             using (OdbcConnection connection = cn.Conexion())
             {
-                string query = "DELETE FROM Movimientos WHERE id_equipo = ?";
-                using (OdbcCommand cmd = new OdbcCommand(query, connection))
+                if (connection == null)
                 {
-                    cmd.Parameters.AddWithValue("@id_equipo", idEquipo);
-                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("No se pudo conectar a la base de datos", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    string query = @"
+                UPDATE Movimientos 
+                SET 
+                    id_usuario = ?, 
+                    tipo_movimiento = ?, 
+                    observaciones = ?, 
+                    cantidad = ?
+                WHERE id_movimiento = ?";
+
+                    using (OdbcCommand cmd = new OdbcCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("", idUsuario);
+                        cmd.Parameters.AddWithValue("", tipoMovimiento);
+                        cmd.Parameters.AddWithValue("", observaciones);
+                        cmd.Parameters.AddWithValue("", cantidad);
+                        cmd.Parameters.AddWithValue("", idMovimiento);
+
+                        int filas = cmd.ExecuteNonQuery();
+
+                        if (filas > 0)
+                        {
+                            MessageBox.Show("Movimiento actualizado correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No se encontró el movimiento con el ID especificado", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al modificar movimiento: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
+        public void eliminarMovimiento(int idMovimiento)
+        {
+            using (OdbcConnection connection = cn.Conexion())
+            {
+                if (connection == null)
+                {
+                    MessageBox.Show("No se pudo conectar a la base de datos", "Error de conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    string query = "DELETE FROM Movimientos WHERE id_movimiento = ?";
+                    using (OdbcCommand cmd = new OdbcCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("", idMovimiento);
+
+                        int filas = cmd.ExecuteNonQuery();
+
+                        if (filas > 0)
+                        {
+                            MessageBox.Show("Movimiento eliminado correctamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No se encontró el movimiento con el ID especificado", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al eliminar movimiento: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
     }
 }

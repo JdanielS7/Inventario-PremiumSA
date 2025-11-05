@@ -148,29 +148,64 @@ DELIMITER ;
 -- ===========================================================
 -- PROCEDIMIENTO PARA REGISTRAR MOVIMIENTOS
 -- ===========================================================
-DELIMITER $$
+DROP PROCEDURE IF EXISTS registrar_movimiento;
+DELIMITER //
 
 CREATE PROCEDURE registrar_movimiento(
     IN p_id_equipo INT,
     IN p_id_usuario INT,
-    IN p_tipo_movimiento ENUM('Retiro', 'Devolución', 'Reparación', 'Asignación', 'Baja'),
-    IN p_observaciones TEXT
+    IN p_tipo_movimiento VARCHAR(20),
+    IN p_observaciones TEXT,
+    IN p_cantidad INT
 )
 BEGIN
-    DECLARE v_id_bodega INT;
+    DECLARE v_id_bodega INT DEFAULT NULL;
 
-    SELECT id_bodega INTO v_id_bodega FROM Equipos WHERE id_equipo = p_id_equipo;
+    -- Obtener la bodega del equipo
+    SELECT id_bodega
+    INTO v_id_bodega
+    FROM Equipos
+    WHERE id_equipo = p_id_equipo
+    LIMIT 1;
 
-    INSERT INTO Movimientos (id_equipo, id_usuario, id_bodega_origen, tipo_movimiento, observaciones)
-    VALUES (p_id_equipo, p_id_usuario, v_id_bodega, p_tipo_movimiento, p_observaciones);
+    -- Insertar el movimiento
+    INSERT INTO Movimientos (
+        id_equipo,
+        id_usuario,
+        id_bodega_origen,
+        tipo_movimiento,
+        observaciones,
+        cantidad
+    )
+    VALUES (
+        p_id_equipo,
+        p_id_usuario,
+        v_id_bodega,
+        p_tipo_movimiento,
+        p_observaciones,
+        p_cantidad
+    );
 
-    -- Actualizar estado del equipo
+    -- Actualizar stock y estado según tipo
     IF p_tipo_movimiento = 'Retiro' THEN
-        UPDATE Equipos SET id_estado = 2 WHERE id_equipo = p_id_equipo;
+        UPDATE Equipos
+        SET id_estado = 2
+        WHERE id_equipo = p_id_equipo;
+
+        UPDATE Inventario_Equipos
+        SET stock_actual = GREATEST(stock_actual - p_cantidad, 0)
+        WHERE id_equipo = p_id_equipo;
+
     ELSEIF p_tipo_movimiento = 'Devolución' THEN
-        UPDATE Equipos SET id_estado = 1 WHERE id_equipo = p_id_equipo;
+        UPDATE Equipos
+        SET id_estado = 1
+        WHERE id_equipo = p_id_equipo;
+
+        UPDATE Inventario_Equipos
+        SET stock_actual = stock_actual + p_cantidad
+        WHERE id_equipo = p_id_equipo;
     END IF;
-END $$
+END //
 
 DELIMITER ;
 
@@ -190,3 +225,7 @@ FROM Inventario_Equipos i
 JOIN Equipos e ON i.id_equipo = e.id_equipo
 JOIN Categorias c ON e.id_categoria = c.id_categoria
 WHERE i.stock_actual <= i.stock_minimo;
+
+/*Modificación a movimientos*/
+ALTER TABLE Movimientos ADD COLUMN cantidad INT DEFAULT 1;
+
