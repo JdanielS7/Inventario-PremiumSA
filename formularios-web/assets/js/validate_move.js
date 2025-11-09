@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let validatedCode = null;
   let categorias = [];
   let productos = [];
+  const bodegaSelect = document.getElementById('idBodega');
 
   // Auto-paste from clipboard if it's a 6-digit code
   navigator.clipboard.readText().then(text => {
@@ -231,11 +232,51 @@ document.addEventListener('DOMContentLoaded', function() {
     productsContainer.appendChild(div);
   }
 
-  // Evento del botón añadir producto
-  btnAddProduct.addEventListener('click', crearFilaProducto);
+  // Inicialmente evitar añadir productos hasta seleccionar bodega
+  btnAddProduct.disabled = true;
 
-  // Al cargar el formulario, obtener las categorías
-  cargarCategorias();
+  // Habilitar botón de añadir productos sólo si se selecciona una bodega
+  bodegaSelect.addEventListener('change', () => {
+    const val = bodegaSelect.value;
+    if (!val) {
+      btnAddProduct.disabled = true;
+      // limpiar filas de productos si quitan o cambian la bodega
+      productsContainer.innerHTML = '';
+    } else {
+      btnAddProduct.disabled = false;
+    }
+  });
+
+  // Evento del botón añadir producto (comprueba que exista bodega seleccionada)
+  btnAddProduct.addEventListener('click', () => {
+    if (!bodegaSelect.value) {
+      showAlert('Debe seleccionar la bodega de origen antes de agregar productos.');
+      return;
+    }
+    crearFilaProducto();
+  });
+
+  // Cargar bodegas al iniciar
+  async function cargarBodegas() {
+    try {
+      const base = (window.API_BASE_URL || '').replace(/\/$/, '');
+      const res = await fetch(`${base}/api/bodegas`);
+      if (!res.ok) throw new Error('Error al cargar bodegas');
+      const bodegas = await res.json();
+      
+      const bodegaSelect = document.getElementById('idBodega');
+      bodegaSelect.innerHTML = `
+        <option value="">Seleccione una bodega</option>
+        ${bodegas.map(b => `<option value="${b.idBodega}">${b.nombreBodega}</option>`).join('')}
+      `;
+    } catch (err) {
+      console.error(err);
+      showAlert('Error al cargar bodegas');
+    }
+  }
+
+  // Al cargar el formulario, obtener las categorías y bodegas
+  Promise.all([cargarCategorias(), cargarBodegas()]);
 
   moveForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -243,6 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const tipo = document.getElementById('tipoMovimiento').value;
     const idBodega = document.getElementById('idBodega').value || null;
+    if (!idBodega) {
+      showAlert('La bodega de origen es obligatoria. Seleccione una bodega.');
+      return;
+    }
     const observaciones = document.getElementById('observaciones').value.trim();
 
     // Recolectar productos de las filas

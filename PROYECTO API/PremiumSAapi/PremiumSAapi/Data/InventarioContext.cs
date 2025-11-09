@@ -13,6 +13,7 @@ namespace PremiumSAapi.Data
         public DbSet<Movimiento> Movimientos { get; set; } = null!;
         public DbSet<Categoria> Categorias { get; set; } = null!;
         public DbSet<Equipo> Equipos { get; set; } = null!;
+        public DbSet<Bodega> Bodegas { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -78,6 +79,13 @@ namespace PremiumSAapi.Data
                 entity.HasOne(e => e.Categoria)
                     .WithMany()
                     .HasForeignKey(e => e.IdCategoria);
+            });
+
+            // Bodegas
+            modelBuilder.Entity<Bodega>(entity =>
+            {
+                entity.ToTable("Bodegas");
+                entity.HasKey(e => e.IdBodega).HasName("PK_Bodegas");
             });
         }
     }

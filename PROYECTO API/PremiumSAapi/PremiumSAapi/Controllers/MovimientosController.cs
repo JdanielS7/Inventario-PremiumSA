@@ -32,9 +32,80 @@ namespace PremiumSAapi.Controllers
                 return BadRequest(new { success = false, message = "Debe enviar al menos un producto." });
             }
 
+            // La bodega de origen es obligatoria
+            if (dto.IdBodega == null)
+            {
+                return BadRequest(new { success = false, message = "Debe seleccionar la bodega de origen." });
+            }
+
+            // Validaciones adicionales: cada equipo debe existir y pertenecer a la bodega seleccionada
+            // y verificar stock mínimo para movimientos que reducen stock.
+            // Hacemos estas comprobaciones antes de comenzar la transacción.
             var tipo = dto.TipoMovimiento?.Trim() ?? string.Empty;
             var esRetiro = string.Equals(tipo, "Retiro", StringComparison.OrdinalIgnoreCase);
+            var esBaja = string.Equals(tipo, "Baja", StringComparison.OrdinalIgnoreCase);
             var esDevolucion = string.Equals(tipo, "Devolución", StringComparison.OrdinalIgnoreCase) || string.Equals(tipo, "Devolucion", StringComparison.OrdinalIgnoreCase);
+            foreach (var p in dto.Productos)
+            {
+                // Verificar que el equipo exista
+                var equipo = await _db.Equipos.FindAsync(p.IdEquipo);
+                if (equipo == null)
+                {
+                    return BadRequest(new { success = false, message = $"El equipo con id {p.IdEquipo} no existe." });
+                }
+
+                // Verificar que el equipo pertenece a la bodega seleccionada
+                if (equipo.IdBodega == null || equipo.IdBodega != dto.IdBodega)
+                {
+                    return BadRequest(new { success = false, message = $"El equipo '{equipo.NombreEquipo}' (id {equipo.IdEquipo}) no se encuentra en la bodega seleccionada." });
+                }
+
+                // Si es movimiento que reduce stock, verificar inventario
+                if (esRetiro || esBaja)
+                {
+                    // Leer stock_actual y stock_minimo desde Inventario_Equipos
+                    int stockActual = 0;
+                    int stockMinimo = 1;
+                    var conn = _db.Database.GetDbConnection();
+                    try
+                    {
+                        await conn.OpenAsync();
+                        using var cmd = conn.CreateCommand();
+                        cmd.CommandText = "SELECT stock_actual, stock_minimo FROM Inventario_Equipos WHERE id_equipo = @id";
+                        var param = cmd.CreateParameter();
+                        param.ParameterName = "@id";
+                        param.Value = p.IdEquipo;
+                        cmd.Parameters.Add(param);
+
+                        using var reader = await cmd.ExecuteReaderAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            stockActual = reader.GetInt32(0);
+                            stockMinimo = reader.GetInt32(1);
+                        }
+                        else
+                        {
+                            // Si no existe fila en inventario, asumimos stockActual = 0, stockMinimo = 1
+                            stockActual = 0;
+                            stockMinimo = 1;
+                        }
+                    }
+                    finally
+                    {
+                        try { await conn.CloseAsync(); } catch { }
+                    }
+
+                    var cantidad = p.Cantidad <= 0 ? 1 : p.Cantidad;
+                    var stockFinal = stockActual - cantidad;
+                    if (stockFinal < stockMinimo)
+                    {
+                        return BadRequest(new { success = false, message = $"No es posible retirar {cantidad} unidades del equipo '{equipo.NombreEquipo}' (id {equipo.IdEquipo}) porque dejaría el stock por debajo del mínimo ({stockMinimo}). Stock actual: {stockActual}." });
+                    }
+                    // Si stockFinal == stockMinimo -> permitimos pero se puede notificar (frontend ya muestra advertencia)
+                }
+            }
+
+            
 
             await using var trx = await _db.Database.BeginTransactionAsync();
             try
