@@ -103,6 +103,16 @@ namespace CapaVista.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap categorias {
+            get {
+                object obj = ResourceManager.GetObject("categorias", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap categorizacion {
             get {
                 object obj = ResourceManager.GetObject("categorizacion", resourceCulture);
@@ -146,6 +156,26 @@ namespace CapaVista.Properties {
         internal static System.Drawing.Bitmap guardar_registro1 {
             get {
                 object obj = ResourceManager.GetObject("guardar_registro1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap herramienta_manual {
+            get {
+                object obj = ResourceManager.GetObject("herramienta-manual", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap herramientas_manuales {
+            get {
+                object obj = ResourceManager.GetObject("herramientas-manuales", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
