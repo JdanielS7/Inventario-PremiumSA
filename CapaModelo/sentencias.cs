@@ -762,18 +762,20 @@ namespace CapaModelo
             using (OdbcConnection connection = cn.Conexion())
             {
                 string query = @"
-            SELECT 
-                i.id_inventario,
-                i.id_equipo,
-                e.nombre_equipo,
-                e.marca,
-                e.modelo,
-                c.nombre_categoria,
-                i.stock_actual,
-                i.stock_minimo
-            FROM Inventario_Equipos i
-            JOIN Equipos e ON i.id_equipo = e.id_equipo
-            LEFT JOIN Categorias c ON e.id_categoria = c.id_categoria";
+    SELECT 
+        i.id_inventario,
+        i.id_equipo,            
+        e.nombre_equipo,         
+        e.marca,
+        e.modelo,
+        c.nombre_categoria,
+        i.stock_actual,
+        i.stock_minimo
+    FROM Inventario_Equipos i
+    INNER JOIN Equipos e ON i.id_equipo = e.id_equipo
+    LEFT JOIN Categorias c ON e.id_categoria = c.id_categoria";
+
+
 
                 using (OdbcDataAdapter da = new OdbcDataAdapter(query, connection))
                 {
